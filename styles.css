@@ -1,29 +1,44 @@
 :root{
-  --bg:#0f1115; --card:#0f1720; --muted:#9aa4b2; --accent:#6ee7b7;
-  --glass:rgba(255,255,255,0.03);
-  --maxw:1100px;
+  --bg:#07101a; --panel:#0c1620; --muted:#9fb0bf; --text:#eaf5ff; --accent:#49e6b8;
+  --glass:rgba(255,255,255,0.03); --radius:12px; --maxw:1100px;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 *{box-sizing:border-box}
-body{margin:0;background:linear-gradient(180deg,#081017 0%, #07101a 100%);color:#e6eef6;line-height:1.45}
+html,body{height:100%}
+body{margin:0;background:linear-gradient(180deg,#041018 0%, #07101a 100%);color:var(--text);line-height:1.45;-webkit-font-smoothing:antialiased}
 .container{max-width:var(--maxw);margin:0 auto;padding:28px}
-.hero{padding:48px 0 36px;border-bottom:1px solid rgba(255,255,255,0.03)}
-.hero h1{margin:0;font-size:40px;letter-spacing:-0.02em}
-.lead{color:var(--muted);margin-top:8px}
-.nav-links{margin-top:18px}
-.nav-links a{color:var(--muted);margin-right:16px;text-decoration:none;font-weight:600;font-size:14px}
-.section{padding:36px 0;border-bottom:1px solid rgba(255,255,255,0.02)}
+.hero{padding:36px 0;border-bottom:1px solid rgba(255,255,255,0.025)}
+.hero-inner{display:flex;align-items:center;gap:24px;justify-content:space-between}
+.hero-left h1{margin:0;font-size:36px;letter-spacing:-0.02em}
+.tagline{color:var(--muted);margin-top:8px}
+.hero-ctas{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+.btn{background:var(--accent);color:#012528;padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)}
+.btn.outline{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+.portrait-placeholder{width:96px;height:96px;border-radius:14px;background:linear-gradient(135deg,#08313a,#042b33);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:28px}
+.section{padding:34px 0;border-bottom:1px solid rgba(255,255,255,0.02)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
-.card{background:var(--card);padding:18px;border-radius:12px;box-shadow: 0 6px 18px rgba(2,6,23,0.6);border:1px solid var(--glass);transition:transform .22s ease,box-shadow .22s ease}
-.card:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(2,6,23,0.75)}
-.card h3{margin:0 0 8px;font-size:18px}
-.card p{margin:0 0 10px;color:var(--muted);font-size:14px}
-.meta{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
-.badge{background:rgba(255,255,255,0.04);padding:6px 8px;border-radius:999px;font-weight:600}
+.card{background:var(--panel);padding:16px;border-radius:var(--radius);box-shadow: 0 8px 20px rgba(1,6,12,0.6);border:1px solid var(--glass);transition:transform .18s ease,box-shadow .18s ease}
+.card:focus-within, .card:hover{transform:translateY(-6px);box-shadow:0 14px 36px rgba(1,6,12,0.75)}
+.card h3{margin:0 0 8px;font-size:16px}
+.card p{margin:0 0 10px;color:var(--muted);font-size:13px}
+.meta{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.badge{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:999px;font-weight:700}
+.demo-badge{background:linear-gradient(90deg,#1e8b6f,#49e6b8);color:#012528;padding:6px 8px;border-radius:8px;font-weight:800}
 .stack{display:flex;flex-direction:column;gap:18px}
 .cat-title{margin:0 0 8px;color:var(--accent);font-weight:700}
+.resume-row{display:flex;gap:24px;flex-wrap:wrap;align-items:center}
+.achievements{margin:6px 0 0;padding-left:18px;color:var(--muted)}
+.note{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;margin-top:12px}
 .footer{padding:28px 0;color:var(--muted);text-align:center}
 a{color:var(--accent)}
-@media (max-width:640px){
-  .hero h1{font-size:28px}
+/* Accessibility focus */
+a:focus, button:focus, .card a:focus{outline:3px solid rgba(73,230,184,0.18);outline-offset:3px;border-radius:8px}
+@media (max-width:880px){
+  .hero-inner{flex-direction:column;align-items:flex-start}
+  .portrait-placeholder{width:80px;height:80px}
+}
+@media (max-width:560px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+  .hero-left h1{font-size:28px}
 }
