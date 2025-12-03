@@ -3,48 +3,81 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Poojitha — Design & Code Portfolio</title>
+  <title>Poojitha Yelkur — Design & Projects</title>
+  <meta name="description" content="Poojitha Yelkur — portfolio showcasing design experiments, web projects and live demos. Click projects to open live demos when available." />
   <link rel="stylesheet" href="styles.css" />
-  <meta name="description" content="Poojitha Yelkur — projects & experiments" />
 </head>
 <body>
-  <header class="hero">
-    <div class="container">
-      <h1>Poojitha Yelkur</h1>
-      <p class="lead">Design experiments & web projects — curated from my GitHub.</p>
-      <nav class="nav-links">
-        <a href="#featured">Featured</a>
-        <a href="#by-category">By Category</a>
-        <a href="#all-projects">All Projects</a>
-        <a href="https://github.com/PoojithaYelkur" target="_blank" rel="noreferrer">GitHub</a>
-      </nav>
+  <header class="hero" role="banner">
+    <div class="container hero-inner">
+      <div class="hero-left">
+        <h1>Poojitha Yelkur</h1>
+        <p class="tagline">Designing better experiences through creativity and clarity</p>
+        <div class="hero-ctas">
+          <a class="btn" href="https://www.linkedin.com/in/yelkur-pujitha" target="_blank" rel="noopener noreferrer" aria-label="Open LinkedIn">LinkedIn</a>
+          <a class="btn ghost" href="https://github.com/PoojithaYelkur" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub">GitHub</a>
+          <a class="btn outline" href="#contact" aria-label="Contact">Contact</a>
+        </div>
+      </div>
+
+      <div class="hero-right" aria-hidden="true">
+        <div class="portrait-placeholder">PJ</div>
+      </div>
     </div>
   </header>
 
-  <main class="container">
+  <main class="container" id="main" role="main">
     <section id="featured" class="section">
-      <h2>Featured case studies</h2>
+      <h2>Featured Projects</h2>
       <div id="featured-grid" class="grid"></div>
     </section>
 
     <section id="by-category" class="section">
-      <h2>By category</h2>
+      <h2>By Category</h2>
       <div id="categories" class="stack"></div>
     </section>
 
     <section id="all-projects" class="section">
-      <h2>All projects</h2>
+      <h2>All Projects</h2>
       <div id="projects" class="grid"></div>
+    </section>
+
+    <section id="resume" class="section">
+      <h2>Resume & Achievements</h2>
+      <div class="resume-row">
+        <div>
+          <p><strong>Download resume:</strong></p>
+          <a class="btn" href="Pujitha resume.pdf" download="Poojitha_Yelkur_Resume.pdf" aria-label="Download resume">Download Resume (PDF)</a>
+        </div>
+        <div>
+          <p><strong>Selected achievements</strong></p>
+          <ul class="achievements">
+            <li>Top performer in UI prototyping hackathon (placeholder)</li>
+            <li>Built multiple live demos & rapid prototypes</li>
+            <li>Contributions to frontend tooling and design systems</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="all-readme-note" class="section note">
+      <p><small>Project cards show a short README preview where available. Live Demo badge appears when a project's <code>homepage</code> is set — clicking prioritizes the demo over the GitHub repo.</small></p>
+    </section>
+
+    <section id="contact" class="section">
+      <h2>Contact</h2>
+      <p>College email: <a href="mailto:23211a72c6@bvrit.ac.in">23211a72c6@bvrit.ac.in</a></p>
+      <p>Personal email: <a href="mailto:23211a72c6@gmail.com">23211a72c6@gmail.com</a></p>
+      <p>LinkedIn: <a href="https://www.linkedin.com/in/yelkur-pujitha" target="_blank" rel="noopener noreferrer">/in/yelkur-pujitha</a></p>
     </section>
   </main>
 
-  <footer class="footer">
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p>Want a tailored case study rewrite or live Framer page? <a href="mailto:YOUR_EMAIL">Get in touch</a>.</p>
-      <small>Auto-generated from GitHub public repos for <strong>PoojithaYelkur</strong>.</small>
+      <small>Auto-generated portfolio • Projects sourced from public GitHub repos for <strong>PoojithaYelkur</strong>.</small>
     </div>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
