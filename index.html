@@ -4,41 +4,44 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Poojitha Yelkur — AI & Data Science Portfolio</title>
-  <meta name="description" content="Poojitha Yelkur — AI & Data Science undergraduate. Projects, live demos, notebooks, MLOps work. Interned at Amazon & Infosys. Resume & contact." />
+  <meta name="description" content="Poojitha Yelkur — AI & Data Science undergraduate. Projects, live demos, notebooks, and MLOps work. Interned at Amazon & Infosys. Resume & contact." />
   <meta name="keywords" content="AI, Data Science, Machine Learning, MLOps, Python, TensorFlow, PyTorch, Kaggle, Poojitha Yelkur" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Left nav inspired by the referenced single-page portfolio layout (compact vertical nav) -->
-  <aside class="side-nav" aria-label="Primary">
-    <div class="side-top">
-      <img class="side-avatar" src="https://github.com/PoojithaYelkur.png" alt="Poojitha Yelkur">
-      <div class="side-name">Poojitha<br/><span class="side-role">AI & Data Science</span></div>
+  <!-- TOP NAV (replaces side-nav) -->
+  <header class="top-nav" role="banner">
+    <div class="nav-inner container">
+      <div class="brand">
+        <picture>
+          <source srcset="profile-photo.jpg" type="image/jpeg">
+          <img src="profile-photo.jpg" alt="Poojitha Yelkur" class="nav-avatar" />
+        </picture>
+        <a class="brand-name" href="#hero">Poojitha Yelkur</a>
+      </div>
+
+      <nav class="nav-links" role="navigation" aria-label="Primary">
+        <a href="#hero">Home</a>
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#featured">Work</a>
+        <a href="#contact">Contact</a>
+      </nav>
     </div>
-    <nav class="side-links" role="navigation">
-      <a href="#hero">Home</a>
-      <a href="#skills">Skills</a>
-      <a href="#featured">Featured</a>
-      <a href="#all-projects">Projects</a>
-      <a href="#resume">Resume</a>
-      <a href="#contact">Contact</a>
-    </nav>
-    <div class="side-footer">
-      <a href="https://www.linkedin.com/in/yelkur-pujitha" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">LinkedIn</a>
-      <a href="https://github.com/PoojithaYelkur" target="_blank" rel="noopener noreferrer" aria-label="GitHub">GitHub</a>
-    </div>
-  </aside>
+  </header>
 
   <main class="content" id="main">
-    <!-- HERO (large, cinematic like the reference) -->
+    <!-- HERO -->
     <section id="hero" class="hero section reveal">
-      <div class="hero-inner">
+      <div class="hero-inner container">
         <div class="hero-left">
           <h1>Poojitha Yelkur</h1>
           <p class="lead">Building Intelligent Systems through Data-Driven Insights & MLOps.</p>
           <p class="meta">AI & Data Science undergraduate • Interned at Amazon & Infosys • CGPA: 9.2/10</p>
+
           <div class="hero-ctas">
-            <a class="btn primary" href="Pujitha resume.pdf" download="Poojitha_Yelkur_Resume.pdf">Download Resume</a>
+            <a class="btn primary" href="Pujitha resume.pdf" download="Poojitha_Yelkur_Resume.pdf" aria-label="Download resume">Download Resume</a>
+            <a class="btn outline" id="view-resume" href="Pujitha resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View resume in new tab">View Resume</a>
             <a class="btn ghost" href="https://www.linkedin.com/in/yelkur-pujitha" target="_blank" rel="noopener noreferrer">LinkedIn</a>
             <a class="btn ghost" href="https://github.com/PoojithaYelkur" target="_blank" rel="noopener noreferrer">GitHub</a>
           </div>
@@ -46,9 +49,10 @@
 
         <div class="hero-right">
           <div class="profile-wrap">
-            <img class="profile-pic" src="https://github.com/PoojithaYelkur.png" alt="Poojitha Yelkur">
+            <img class="profile-pic" src="profile-photo.jpg" alt="Poojitha Yelkur — profile photo" width="160" height="160" />
             <div class="pulse-glow" aria-hidden="true"></div>
           </div>
+
           <div class="quick-stats">
             <div class="stat">
               <div class="stat-number">9.2</div>
@@ -67,74 +71,133 @@
       </div>
     </section>
 
-    <!-- Skills -->
-    <section id="skills" class="section reveal">
-      <h2>Technical Skills</h2>
-      <div class="skills">
-        <span>Python</span>
-        <span>TensorFlow / PyTorch</span>
-        <span>MLOps • Docker</span>
-        <span>SQL • Data Engineering</span>
-        <span>NLP • Computer Vision</span>
-        <span>Pandas • NumPy • Scikit-learn</span>
+    <!-- ABOUT (populated from resume) -->
+    <section id="about" class="section reveal">
+      <div class="container about-inner">
+        <h2>About — Profile Summary</h2>
+        <p class="about-description">
+          AI & Data Science undergraduate with hands-on experience in cloud engineering, backend systems, and GenAI tooling.
+          Interned at Amazon and Infosys, contributing to scalable backend systems and AI prototypes. Passionate about creative
+          coding, data-driven decisions, and building impactful products.
+        </p>
+
+        <div class="about-grid">
+          <div class="about-block">
+            <h3>Experience Highlights</h3>
+            <ul>
+              <li><strong>Software Development Intern — Amazon (Jun 2025 – Aug 2025)</strong><br>
+                Engineered backend services for Competitor Monitoring Tools (CMT), optimized price intelligence pipelines, and built scalable features in a microservices environment.</li>
+              <li><strong>DSA Scholar — Amazon Future Engineer (Jun 2024 – Apr 2025)</strong><br>
+                Completed a focused 10-month program in algorithms, data structures, and system design.</li>
+              <li><strong>Springboard Intern — Infosys (Nov 2024 – Feb 2025)</strong><br>
+                Designed and deployed an AI chatbot for healthcare triage (MediTrain), contributed to CI/CD and ethical ML modules.</li>
+            </ul>
+          </div>
+
+          <div class="about-block">
+            <h3>Education & Certifications</h3>
+            <p><strong>B.Tech — AI & Data Science, BVRIT, Narsapur</strong><br>Aug 2021 – May 2025 • CGPA: 9.2/10</p>
+            <p class="certs">
+              <strong>Certifications:</strong><br>
+              Prompt Design in Vertex AI (Google Cloud), Machine Learning Foundation (AWS Labs), GenAI apps with Gemini & Streamlit, Data Analytics
+            </p>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Featured -->
-    <section id="featured" class="section reveal">
-      <h2>Featured Projects</h2>
-      <div id="featured-grid" class="projects-grid"></div>
+    <!-- Skills (expanded) -->
+    <section id="skills" class="section reveal">
+      <div class="container">
+        <h2>Technical Skills</h2>
+        <div class="skills" id="skills-list">
+          <span>Python</span>
+          <span>Java</span>
+          <span>web dev</span>
+          <span>TensorFlow</span>
+          <span>PyTorch</span>
+          <span>Scikit-learn</span>
+          <span>Pandas</span>
+          <span>NumPy</span>
+          <span>SQL</span>
+          <span>Docker</span>
+          <span>Kubernetes</span>
+          <span>MLOps</span>
+          <span>Git</span>
+          <span>Streamlit</span>
+          <span>Power BI</span>
+          <span>Tableau</span>
+          <span>LangChain</span>
+          <span>OpenAI / GPT</span>
+          <span>Vertex AI</span>
+          <span>AWS (S3, EC2, CloudFront)</span>
+        </div>
+      </div>
     </section>
 
-    <!-- Projects by Category -->
-    <section id="by-category" class="section reveal">
-      <h2>Projects by Category</h2>
-      <div id="categories" class="category-stack"></div>
+    <!-- Featured Projects -->
+    <section id="featured" class="section reveal">
+      <div class="container">
+        <h2>Work</h2>
+        <div id="featured-grid" class="projects-grid"></div>
+      </div>
     </section>
 
     <!-- All projects -->
     <section id="all-projects" class="section reveal">
-      <h2>All Projects</h2>
-      <div id="projects" class="projects-grid"></div>
+      <div class="container">
+        <h2>All Projects</h2>
+        <div id="projects" class="projects-grid"></div>
+      </div>
     </section>
 
     <!-- Resume & Achievements -->
     <section id="resume" class="section reveal">
-      <h2>Resume & Achievements</h2>
-      <div class="resume-panel">
+      <div class="container resume-panel">
         <div class="resume-left">
-          <a class="btn primary" href="Pujitha resume.pdf" download="Poojitha_Yelkur_Resume.pdf">Download Resume (PDF)</a>
-          <p class="muted">Resume included in repository (source: provided file).</p>
+          <a class="btn primary" href="Pujitha resume.pdf" download="Poojitha_Yelkur_Resume.pdf" aria-label="Download resume">Download Resume (PDF)</a>
+          <a class="btn outline" href="Pujitha resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View resume">View Resume</a>
+          <p class="muted">Resume included in repository (source: provided file)</p>
         </div>
         <div class="resume-right">
           <ul>
-            <li>Amazon Future Engineer Scholar (2024–25)</li>
-            <li>Yukthi Hackathon — Consolation Prize</li>
-            <li>Myntra HackerRamp 2024 — Top 5%</li>
-            <li>Certs: Vertex AI Prompt Design, AWS ML Foundations</li>
+            <li>Consolation Prize — Yukthi Hackathon</li>
+            <li>Shortlisted — Myntra HackerRamp (Top 5%)</li>
+            <li>Amazon FFE-AFE Scholarship</li>
+            <li>Certs: Vertex AI Prompt Design, AWS ML Foundation</li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- Note about interactions -->
-    <section class="section note reveal">
-      <p><small><strong>Interaction model:</strong> Each project card exposes two buttons — <em>Live Demo / Notebook</em> (opens project's homepage if set) and <em>View Code</em> (opens GitHub). This prioritizes runnable demos for interviewers while keeping code accessible.</small></p>
-    </section>
-
     <!-- Contact -->
     <section id="contact" class="section reveal">
-      <h2>Contact</h2>
-      <p>College email: <a href="mailto:23211a72c6@bvrit.ac.in">23211a72c6@bvrit.ac.in</a></p>
-      <p>Personal email: <a href="mailto:23211a72c6@gmail.com">23211a72c6@gmail.com</a></p>
-      <p>LinkedIn: <a href="https://www.linkedin.com/in/yelkur-pujitha" target="_blank" rel="noopener noreferrer">/in/yelkur-pujitha</a></p>
-      <p>GitHub: <a href="https://github.com/PoojithaYelkur" target="_blank" rel="noopener noreferrer">github.com/PoojithaYelkur</a></p>
-    </section>
+      <div class="container">
+        <h2>Contact</h2>
+        <div class="contact-icons">
+          <a href="https://github.com/PoojithaYelkur" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.1-1.2-1.4-1.2-1.4-1-.7.1-.7.1-.7 1 .1 1.6 1 1.6 1 .9 1.6 2.4 1.1 3 .8.1-.7.4-1.1.7-1.3-2.7-.3-5.6-1.3-5.6-5.9 0-1.3.5-2.4 1.2-3.3-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.6 11.6 0 0 1 6.2 0c2.3-1.6 3.4-1.2 3.4-1.2.6 1.7.3 2.9.1 3.2.8.9 1.2 2 1.2 3.3 0 4.7-2.9 5.6-5.6 5.9.4.4.8 1 .8 2v3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
+          </a>
 
-    <footer class="footer">
-      <small>Designed for placement drives — projects auto-sourced from GitHub public repos (user: <strong>PoojithaYelkur</strong>).</small>
-    </footer>
+          <a href="mailto:23211a72c6@bvrit.ac.in" aria-label="Email">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 2v.5l-8 5-8-5V6h16zm0 12H4V8l8 5 8-5v10z"/></svg>
+          </a>
+
+          <a href="https://www.linkedin.com/in/yelkur-pujitha" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM3 8.98h3.96V21H3V8.98zm7.53 0H14v1.62h.05c.5-.95 1.72-1.96 3.54-1.96 3.79 0 4.49 2.49 4.49 5.72V21H18V14.8c0-1.48-.03-3.38-2.06-3.38-2.06 0-2.38 1.62-2.38 3.28V21h-3.96V8.98z"/></svg>
+          </a>
+
+          <a href="tel:+919110764053" aria-label="Phone">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.8-.4 1.2-.3 1.3.4 2.7.7 4.1.7.7 0 1.3.6 1.3 1.3v3.4c0 .7-.6 1.3-1.3 1.3A19.6 19.6 0 0 1 2 4.3C2 3.6 2.6 3 3.3 3h3.4c.7 0 1.3.6 1.3 1.3 0 1.4.2 2.8.7 4.1.1.4 0 .8-.3 1.2L6.6 10.8z"/></svg>
+          </a>
+        </div>
+
+        <p class="muted center-text">Feel free to reach out anytime!</p>
+      </div>
+    </section>
   </main>
+
+
 
   <script src="app.js" defer></script>
 </body>
