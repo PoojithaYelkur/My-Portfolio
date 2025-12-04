@@ -1,31 +1,32 @@
 /**
- * app.js — FINAL UPDATED VERSION
- * -----------------------------------------
- * Features:
- *  - Fetch projects from GitHub API
- *  - Featured section (auto picks top 3 or FEATURED array)
- *  - README snippet preview
- *  - "Live / Output" button → repo.homepage OR GitHub Pages fallback
- *  - "View Code" button → GitHub repo
- *  - Removed "Projects by Category"
- *  - Smooth reveal animations on scroll
+ * app.js — PATCHED / FINAL
+ *
+ * - Adds top-of-file sanity log
+ * - Robust DOM existence checks to avoid fatal null errors
+ * - Graceful handling when GitHub API fails (rate-limits / network)
+ * - Keeps Live / Output fallback to GitHub Pages
+ * - Keeps README snippet fetching but never blocks rendering
+ * - IntersectionObserver safe-guarded (only runs when .reveal exist)
+ *
+ * Replace your existing app.js with this file.
  */
 
+console.log("app.js loaded successfully — starting portfolio script");
+
+/* CONFIG */
 const USER = "PoojithaYelkur";
 const API_BASE = "https://api.github.com";
 const REPOS_URL = `${API_BASE}/users/${USER}/repos?per_page=100&sort=updated`;
 
-// OPTIONAL (only for local dev rate limits) — DO NOT COMMIT TOKEN
+/* OPTIONAL: for local dev only; never commit a token */
 let GITHUB_TOKEN = null; // "ghp_xxx"
 
+/* Manual featured override (lowercased repo names) */
 const FEATURED = [
-  // Add repo names you want featured manually
-  // Example: "My-Portfolio"
+  // "My-Portfolio",
 ];
 
-// -----------------------------------------------
-// Helpers
-// -----------------------------------------------
+/* ---- Helpers ---- */
 function headers() {
   const h = { Accept: "application/vnd.github.v3+json" };
   if (GITHUB_TOKEN) h.Authorization = `token ${GITHUB_TOKEN}`;
@@ -35,13 +36,12 @@ function headers() {
 function el(tag, attrs = {}, text = "") {
   const e = document.createElement(tag);
   if (attrs.className) e.className = attrs.className;
-  if (text) e.textContent = text;
-  for (const key in attrs) {
-    if (key !== "className" && key !== "html") {
-      e.setAttribute(key, attrs[key]);
-    }
-  }
   if (attrs.html) e.innerHTML = attrs.html;
+  if (text) e.textContent = text;
+  // set other attributes except handled ones
+  for (const k in attrs) {
+    if (k !== "className" && k !== "html") e.setAttribute(k, attrs[k]);
+  }
   return e;
 }
 
@@ -54,51 +54,54 @@ function isValidUrl(str) {
   }
 }
 
-function fallbackLiveURL(repoName) {
+function githubPagesFallback(repoName) {
   const encoded = encodeURIComponent(repoName);
   return `https://${USER}.github.io/${encoded}/`;
 }
 
+/* Safe fetch wrapper that surfaces rate-limits clearly */
 async function fetchJSON(url) {
   const res = await fetch(url, { headers: headers() });
-  if (res.status === 403) throw new Error("rate_limited");
-  if (!res.ok) throw new Error(`GitHub API Error: ${res.status}`);
+  if (res.status === 403) {
+    // GitHub often returns 403 for rate-limited requests
+    throw new Error("rate_limited");
+  }
+  if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
   return res.json();
 }
 
+/* Fetch README snippet but never let it throw to caller */
 async function fetchReadmeSnippet(repoName) {
   try {
     const data = await fetchJSON(`${API_BASE}/repos/${USER}/${repoName}/readme`);
-    const decoded = atob(data.content.replace(/\n/g, ""));
-    const cleaned = decoded.replace(/[#_*`>~\-\[\]\(\)]/g, " ").replace(/\s+/g, " ").trim();
-    return cleaned.length > 200 ? cleaned.slice(0, 200) + "…" : cleaned;
-  } catch (e) {
+    if (data && data.content) {
+      const decoded = atob(data.content.replace(/\n/g, ""));
+      const cleaned = decoded
+        .replace(/[#_*`>~\-\[\]\(\)]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      return cleaned.length > 200 ? cleaned.slice(0, 200) + "…" : cleaned;
+    }
+  } catch (err) {
+    // swallow errors — we return empty snippet if anything goes wrong
     return "";
   }
+  return "";
 }
 
-// -----------------------------------------------
-// Card Component
-// -----------------------------------------------
-function createProjectCard(repo, snippet) {
+/* ---- Card / UI building ---- */
+function createProjectCard(repo, readmeSnippet) {
   const card = el("article", { className: "card", tabindex: "0" });
 
-  // Title
-  const title = el("h3");
-  title.textContent = repo.name;
+  const title = el("h3", {}, repo.name);
   card.appendChild(title);
 
-  // Description
-  card.appendChild(
-    el("p", {}, repo.description || "No description available.")
-  );
+  card.appendChild(el("p", {}, repo.description || "No description available."));
 
-  // README snippet
-  if (snippet) {
-    card.appendChild(el("p", { className: "muted" }, snippet));
+  if (readmeSnippet) {
+    card.appendChild(el("p", { className: "muted" }, readmeSnippet));
   }
 
-  // Meta row
   const meta = el("div", { className: "meta" });
   meta.appendChild(el("div", { className: "badge" }, repo.language || "Other"));
   meta.appendChild(el("div", {}, `⭐ ${repo.stargazers_count || 0}`));
@@ -111,11 +114,10 @@ function createProjectCard(repo, snippet) {
   meta.appendChild(updated);
   card.appendChild(meta);
 
-  // Determine Live link
+  // Live / Output target (homepage or GitHub Pages fallback)
   const hasHomepage = repo.homepage && isValidUrl(repo.homepage);
-  const liveURL = hasHomepage ? repo.homepage : fallbackLiveURL(repo.name);
+  const liveTarget = hasHomepage ? repo.homepage : githubPagesFallback(repo.name);
 
-  // Buttons
   const footer = el("div", { className: "card-footer" });
 
   const liveBtn = el(
@@ -123,8 +125,8 @@ function createProjectCard(repo, snippet) {
     {
       href: "#",
       className: "btn live",
-      title: liveURL,
       role: "button",
+      title: liveTarget,
       "aria-label": `Open live output for ${repo.name}`,
     },
     "Live / Output"
@@ -132,7 +134,12 @@ function createProjectCard(repo, snippet) {
 
   liveBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    window.open(liveURL, "_blank", "noopener,noreferrer");
+    try {
+      window.open(liveTarget, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      // fallback to repo page if anything fails
+      window.open(repo.html_url, "_blank", "noopener,noreferrer");
+    }
   });
 
   const codeBtn = el(
@@ -153,9 +160,10 @@ function createProjectCard(repo, snippet) {
   footer.appendChild(codeBtn);
   card.appendChild(footer);
 
-  // Enter key triggers Live
-  card.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
+  // keyboard accessibility: Enter triggers Live
+  card.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
       liveBtn.click();
     }
   });
@@ -163,21 +171,18 @@ function createProjectCard(repo, snippet) {
   return card;
 }
 
-// -----------------------------------------------
-// Featured project logic
-// -----------------------------------------------
+/* ---- Featured selection ---- */
 function pickFeatured(repos) {
-  let featured = repos.filter((r) =>
-    FEATURED.map((f) => f.toLowerCase()).includes(r.name.toLowerCase())
-  );
+  const manual = FEATURED.map((f) => f.toLowerCase());
+  let featured = repos.filter((r) => manual.includes(r.name.toLowerCase()));
 
   if (featured.length < 3) {
-    const byActivity = [...repos].sort(
-      (a, b) =>
-        b.stargazers_count - a.stargazers_count ||
-        new Date(b.updated_at) - new Date(a.updated_at)
-    );
-    for (const r of byActivity) {
+    const byScore = [...repos].sort((a, b) => {
+      const aScore = (a.stargazers_count || 0) * 5 + new Date(a.updated_at).getTime() / 1000;
+      const bScore = (b.stargazers_count || 0) * 5 + new Date(b.updated_at).getTime() / 1000;
+      return bScore - aScore;
+    });
+    for (const r of byScore) {
       if (featured.length >= 3) break;
       if (!featured.find((f) => f.id === r.id)) featured.push(r);
     }
@@ -186,35 +191,33 @@ function pickFeatured(repos) {
   return featured.slice(0, 3);
 }
 
-// -----------------------------------------------
-// Render functions
-// -----------------------------------------------
+/* ---- Rendering ---- */
 async function renderFeatured(repos) {
-  const container = document.getElementById("featured-grid");
-  container.innerHTML = "";
-
+  const c = document.getElementById("featured-grid");
+  if (!c) return; // safe-guard
+  c.innerHTML = "";
   const featured = pickFeatured(repos);
-
   for (const repo of featured) {
-    const snip = await fetchReadmeSnippet(repo.name);
-    container.appendChild(createProjectCard(repo, snip));
+    const snippet = await fetchReadmeSnippet(repo.name);
+    c.appendChild(createProjectCard(repo, snippet));
   }
 }
 
 async function renderAllProjects(repos) {
-  const container = document.getElementById("projects");
-  container.innerHTML = "";
-
+  const c = document.getElementById("projects");
+  if (!c) return; // safe-guard
+  c.innerHTML = "";
   for (const repo of repos) {
-    const snip = await fetchReadmeSnippet(repo.name);
-    container.appendChild(createProjectCard(repo, snip));
+    const snippet = await fetchReadmeSnippet(repo.name);
+    c.appendChild(createProjectCard(repo, snippet));
   }
 }
 
-// -----------------------------------------------
-// Reveal animations
-// -----------------------------------------------
+/* ---- IntersectionObserver reveal (safe) ---- */
 function initRevealObserver() {
+  const nodes = document.querySelectorAll(".reveal");
+  if (!nodes || nodes.length === 0) return; // nothing to observe
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -224,45 +227,73 @@ function initRevealObserver() {
         }
       });
     },
-    { threshold: 0.15 }
+    { threshold: 0.12 }
   );
 
-  document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+  nodes.forEach((n) => observer.observe(n));
 }
 
-// -----------------------------------------------
-// Initialize
-// -----------------------------------------------
+/* ---- INIT (with robust DOM checks) ---- */
 async function init() {
+  console.log("init() called — validating DOM elements");
+
+  // Basic required elements — if missing, bail gracefully but don't crash the page
+  const featuredGrid = document.getElementById("featured-grid");
+  const projectsGrid = document.getElementById("projects");
+  const main = document.getElementById("main");
+  if (!main) {
+    console.error("Missing <main id=\"main\"> element — aborting render to avoid JS crash.");
+    return;
+  }
+  // Note: featuredGrid/projectsGrid may be intentionally omitted; we protect against that
+  if (!featuredGrid) console.warn("Warning: #featured-grid not found. Featured section will be skipped.");
+  if (!projectsGrid) console.warn("Warning: #projects not found. Projects list will be skipped.");
+
+  // Try to fetch repos — but don't let fetch errors crash the page
+  let repos = [];
   try {
-    const repos = await fetchJSON(REPOS_URL);
+    repos = await fetchJSON(REPOS_URL);
+    if (!Array.isArray(repos)) repos = [];
+  } catch (err) {
+    console.error("Error fetching repos:", err);
+    // show friendly banner to user explaining rate limit or network problem
+    const banner = el("div", { className: "note" });
+    if (err.message === "rate_limited") {
+      banner.innerHTML =
+        "<strong>GitHub API rate limit reached.</strong> For local testing add a Personal Access Token in app.js (GITHUB_TOKEN).";
+    } else {
+      banner.innerHTML = "<strong>Unable to load GitHub projects.</strong> Check console for details.";
+    }
+    main.prepend(banner);
+    // proceed with empty repo list (page still usable)
+    repos = [];
+  }
 
-    // Recent → older
-    repos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+  // Sort and render if we have repositories
+  if (repos.length > 0) repos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
+  // Render sections (each render function is safe-guarded)
+  try {
     await renderFeatured(repos);
     await renderAllProjects(repos);
-
-    initRevealObserver();
-  } catch (e) {
-    console.error(e);
-
-    const main = document.getElementById("main");
-    const msg = el("div", { className: "note" });
-
-    if (e.message === "rate_limited") {
-      msg.innerHTML =
-        "<strong>GitHub API rate limit reached.</strong> Add a Personal Access Token in app.js for local testing.";
-    } else {
-      msg.innerHTML =
-        "<strong>Error loading projects.</strong> Check console for details.";
-    }
-
-    main.prepend(msg);
+  } catch (err) {
+    console.error("Render error (non-fatal):", err);
   }
+
+  // Init reveal animations if any
+  try {
+    initRevealObserver();
+  } catch (err) {
+    console.warn("Reveal observer failed (non-fatal):", err);
+  }
+
+  console.log("init() finished");
 }
 
-// -----------------------------------------------
-// Start
-// -----------------------------------------------
-document.addEventListener("DOMContentLoaded", init);
+/* ---- Start when DOM is ready ---- */
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  // DOM already loaded (rare if script loaded at end)
+  init();
+}
