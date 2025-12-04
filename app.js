@@ -1,24 +1,26 @@
-/**
- * app.js
- * - Fetches public repos for PoojithaYelkur
- * - Renders Featured, By Category, and All Projects
- * - Each card includes two buttons: Live Demo / Notebook (opens homepage) and View Code (opens GitHub)
- * - Implements IntersectionObserver for on-scroll reveal
- *
- * IMPORTANT:
- * - To avoid GitHub API rate limits during heavy usage, set GITHUB_TOKEN to a personal access token (see README).
- * - Do NOT commit PAT to a public repo.
- */
+/* app.js
+   Portfolio script:
+   - Fetches public repos for "PoojithaYelkur"
+   - Renders Featured, Categories and All projects
+   - Each project card shows name, description, language, stars, updated date and README snippet (~200 chars)
+   - Card footer has TWO buttons:
+       * Live Demo / Notebook -> repo.homepage (if valid) else falls back to repo page
+       * View Code -> repo.html_url
+   - IntersectionObserver used for reveal-on-scroll animations
+   - Handles GitHub rate limits and suggests a PAT
+*/
 
 /* CONFIG */
 const USER = "PoojithaYelkur";
 const API_BASE = "https://api.github.com";
-const REPOS_URL = `${API_BASE}/users/${USER}/repos?per_page=100&sort=updated`;
-let GITHUB_TOKEN = null; // Set locally for higher rate limits: e.g. "ghp_xxx"
+const REPOS_ENDPOINT = `${API_BASE}/users/${USER}/repos?per_page=100&sort=updated`;
 
-/* Optional manual featured override (lowercase repo names) */
+/* OPTIONAL: for local testing set your token here (do NOT commit to public repos) */
+let GITHUB_TOKEN = null; // e.g. "ghp_xxx"
+
+/* FEATURED manual override: lowercase repo names */
 const FEATURED = [
-  // "styldex", "sawit.ai"
+  // "example-repo"
 ];
 
 /* Helpers */
@@ -38,8 +40,8 @@ function el(tag, attrs = {}, text = "") {
   return e;
 }
 function isValidHttpUrl(string) {
-  try { const url = new URL(string); return url.protocol === "http:" || url.protocol === "https:"; }
-  catch (_) { return false; }
+  try { const u = new URL(string); return u.protocol === "http:" || u.protocol === "https:"; }
+  catch (e) { return false; }
 }
 
 /* Fetch utilities */
@@ -50,7 +52,7 @@ async function fetchJSON(url) {
   return res.json();
 }
 
-/* README snippet fetch (first ~200 chars) */
+/* README snippet (first ~200 chars) */
 async function fetchReadmeSnippet(repo) {
   const url = `${API_BASE}/repos/${USER}/${repo.name}/readme`;
   try {
@@ -61,28 +63,32 @@ async function fetchReadmeSnippet(repo) {
       return cleaned.slice(0, 200) + (cleaned.length > 200 ? "…" : "");
     }
   } catch (err) {
-    // ignore readme errors (private, missing, or rate limit)
+    // Ignore; return empty snippet
   }
   return "";
 }
 
-/* Card creation */
+/* Create a single project card element */
 function createProjectCard(repo, readmeSnippet = "") {
   const card = el("article", { className: "card", role: "article", tabindex: "0" });
-  const title = el("h3");
-  const titleLink = el("a", { href: "#", ariaLabel: `Open project ${repo.name}` }, repo.name);
-  titleLink.addEventListener("click", (e) => { e.preventDefault(); /* card buttons handle navigation */ });
-  title.appendChild(titleLink);
-  card.appendChild(title);
 
+  // Title
+  const h3 = el("h3");
+  const nameLink = el("a", { href: "#", ariaLabel: `Open project ${repo.name}` }, repo.name);
+  nameLink.addEventListener("click", (e) => e.preventDefault()); // buttons control navigation
+  h3.appendChild(nameLink);
+  card.appendChild(h3);
+
+  // Description
   const desc = el("p", {}, repo.description || "No description provided.");
   card.appendChild(desc);
 
   if (readmeSnippet) {
-    const snip = el("p", { className: "muted" }, readmeSnippet);
-    card.appendChild(snip);
+    const sn = el("p", { className: "muted" }, readmeSnippet);
+    card.appendChild(sn);
   }
 
+  // Meta row
   const meta = el("div", { className: "meta" });
   meta.appendChild(el("div", { className: "badge" }, repo.language || "Other"));
   meta.appendChild(el("div", {}, `⭐ ${repo.stargazers_count || 0}`));
@@ -96,18 +102,17 @@ function createProjectCard(repo, readmeSnippet = "") {
   meta.appendChild(date);
   card.appendChild(meta);
 
-  // Footer with two buttons: Live Demo (if available) and View Code
+  // Footer: two buttons
   const footer = el("div", { className: "card-footer" });
-  const liveBtn = el("a", { className: "btn live", role: "button", href: "#" }, repo.homepage && isValidHttpUrl(repo.homepage) ? "Live Demo" : "No Demo");
+  const liveLabel = (repo.homepage && isValidHttpUrl(repo.homepage)) ? "Live Demo" : "Open";
+  const liveBtn = el("a", { className: "btn live", role: "button", href: "#" }, liveLabel);
   const codeBtn = el("a", { className: "btn code", role: "button", href: "#", target: "_blank", rel: "noopener noreferrer" }, "View Code");
 
-  // Attach behaviors
   liveBtn.addEventListener("click", (e) => {
     e.preventDefault();
     if (repo.homepage && isValidHttpUrl(repo.homepage)) {
       window.open(repo.homepage, "_blank", "noopener,noreferrer");
     } else {
-      // fallback: open repo page if no homepage
       window.open(repo.html_url, "_blank", "noopener,noreferrer");
     }
   });
@@ -116,7 +121,6 @@ function createProjectCard(repo, readmeSnippet = "") {
     window.open(repo.html_url, "_blank", "noopener,noreferrer");
   });
 
-  // Accessibility attributes
   liveBtn.setAttribute("aria-label", `Open live demo for ${repo.name}`);
   codeBtn.setAttribute("aria-label", `Open GitHub repo for ${repo.name}`);
 
@@ -124,10 +128,18 @@ function createProjectCard(repo, readmeSnippet = "") {
   footer.appendChild(codeBtn);
   card.appendChild(footer);
 
+  // Keyboard: Enter/Space opens Live demo
+  card.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      liveBtn.click();
+    }
+  });
+
   return card;
 }
 
-/* Grouping and featured logic */
+/* Grouping and featured selection */
 function groupByLanguage(repos) {
   return repos.reduce((acc, r) => {
     const k = r.language || "Other";
@@ -138,16 +150,16 @@ function groupByLanguage(repos) {
 }
 
 function pickFeatured(repos) {
-  const lowered = FEATURED.map(s => s.toLowerCase());
-  let featured = repos.filter(r => lowered.includes(r.name.toLowerCase()));
+  const manual = FEATURED.map(s => s.toLowerCase());
+  let featured = repos.filter(r => manual.includes(r.name.toLowerCase()));
   if (featured.length < 3) {
-    const byTopic = repos.filter(r => {
+    const topicMatches = repos.filter(r => {
       const nameMatch = r.name && r.name.toLowerCase().includes("portfolio-featured");
       const topics = r.topics || [];
       const topicMatch = topics.some(t => t.toLowerCase().includes("portfolio-featured"));
       return nameMatch || topicMatch;
     });
-    byTopic.forEach(b => { if (!featured.find(f => f.id === b.id)) featured.push(b); });
+    topicMatches.forEach(t => { if (!featured.find(f => f.id === t.id)) featured.push(t); });
   }
   if (featured.length < 3) {
     const sorted = [...repos].sort((a,b) => {
@@ -163,7 +175,7 @@ function pickFeatured(repos) {
   return featured.slice(0,3);
 }
 
-/* Rendering */
+/* Rendering helpers */
 async function renderFeatured(repos) {
   const container = document.getElementById("featured-grid");
   container.innerHTML = "";
@@ -181,7 +193,7 @@ function renderCategories(repos) {
   Object.keys(groups).sort().forEach(lang => {
     const wrap = el("div");
     wrap.appendChild(el("h3", {}, `${lang} (${groups[lang].length})`));
-    const row = el("div", { className: "grid" });
+    const row = el("div", { className: "projects-grid" });
     groups[lang].slice(0,6).forEach(r => row.appendChild(createProjectCard(r)));
     wrap.appendChild(row);
     container.appendChild(wrap);
@@ -197,37 +209,36 @@ async function renderAll(repos) {
   }
 }
 
-/* Rate limit notice */
+/* Rate limit banner */
 function showRateLimitNotice() {
   const main = document.getElementById("main");
   const banner = el("div", { className: "note" }, "");
-  banner.innerHTML = `<strong>GitHub API rate limit reached.</strong> For local development, set a Personal Access Token in app.js (GITHUB_TOKEN). See README.`;
+  banner.innerHTML = `<strong>GitHub API rate limit reached.</strong> For local development, set a Personal Access Token (PAT) in app.js (GITHUB_TOKEN). See README for instructions.`;
   main.prepend(banner);
 }
 
-/* IntersectionObserver for reveal on scroll */
-function initObserver() {
+/* IntersectionObserver for reveal-on-scroll */
+function initRevealObserver() {
   const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.remove("fade-in");
-        obs.unobserve(e.target);
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.remove("reveal");
+        obs.unobserve(entry.target);
       }
     });
   }, { threshold: 0.12 });
-
-  document.querySelectorAll(".fade-in").forEach(elm => obs.observe(elm));
+  document.querySelectorAll(".reveal").forEach(elm => obs.observe(elm));
 }
 
-/* Init */
+/* Initialize app */
 async function init() {
   try {
-    const repos = await fetchJSON(REPOS_URL);
+    const repos = await fetchJSON(REPOS_ENDPOINT);
     repos.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
     await renderFeatured(repos);
     renderCategories(repos);
     await renderAll(repos);
-    initObserver();
+    initRevealObserver();
   } catch (err) {
     console.error(err);
     if (err.message === "rate_limited") showRateLimitNotice();
@@ -240,4 +251,5 @@ async function init() {
   }
 }
 
+/* Run on DOM ready */
 document.addEventListener("DOMContentLoaded", init);
