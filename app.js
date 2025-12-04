@@ -1,34 +1,30 @@
-/* app.js
-   Portfolio script:
-   - Fetches public repos for "PoojithaYelkur"
-   - Renders Featured, Categories and All projects
-   - Each project card shows name, description, language, stars, updated date and README snippet (~200 chars)
-   - Card footer has TWO buttons:
-       * Live Demo / Notebook -> repo.homepage (if valid) else falls back to repo page
-       * View Code -> repo.html_url
-   - IntersectionObserver used for reveal-on-scroll animations
-   - Handles GitHub rate limits and suggests a PAT
-*/
+/**
+ * Modified app.js
+ * - Live / Output button opens repo.homepage (if valid) otherwise opens GitHub-Pages fallback:
+ *     https://PoojithaYelkur.github.io/<repo-name>/
+ * - "View Code" opens the GitHub repo page
+ * - "Projects by Category" removed
+ * - Readme snippet still fetched where possible
+ * - Tooltip (title) added to Live button showing final opened URL
+ */
 
-/* CONFIG */
 const USER = "PoojithaYelkur";
 const API_BASE = "https://api.github.com";
 const REPOS_ENDPOINT = `${API_BASE}/users/${USER}/repos?per_page=100&sort=updated`;
 
-/* OPTIONAL: for local testing set your token here (do NOT commit to public repos) */
-let GITHUB_TOKEN = null; // e.g. "ghp_xxx"
+// Optional PAT for local testing (do NOT commit token)
+let GITHUB_TOKEN = null; // "ghp_xxx"
 
-/* FEATURED manual override: lowercase repo names */
 const FEATURED = [
-  // "example-repo"
+  // e.g. "my-cool-project"
 ];
 
-/* Helpers */
 function headers() {
   const h = { Accept: "application/vnd.github.v3+json" };
   if (GITHUB_TOKEN) h.Authorization = `token ${GITHUB_TOKEN}`;
   return h;
 }
+
 function el(tag, attrs = {}, text = "") {
   const e = document.createElement(tag);
   if (attrs.className) e.className = attrs.className;
@@ -39,12 +35,12 @@ function el(tag, attrs = {}, text = "") {
   }
   return e;
 }
+
 function isValidHttpUrl(string) {
   try { const u = new URL(string); return u.protocol === "http:" || u.protocol === "https:"; }
   catch (e) { return false; }
 }
 
-/* Fetch utilities */
 async function fetchJSON(url) {
   const res = await fetch(url, { headers: headers() });
   if (res.status === 403) throw new Error("rate_limited");
@@ -52,7 +48,6 @@ async function fetchJSON(url) {
   return res.json();
 }
 
-/* README snippet (first ~200 chars) */
 async function fetchReadmeSnippet(repo) {
   const url = `${API_BASE}/repos/${USER}/${repo.name}/readme`;
   try {
@@ -63,32 +58,32 @@ async function fetchReadmeSnippet(repo) {
       return cleaned.slice(0, 200) + (cleaned.length > 200 ? "…" : "");
     }
   } catch (err) {
-    // Ignore; return empty snippet
+    // ignore
   }
   return "";
 }
 
-/* Create a single project card element */
+function githubPagesFallback(repoName) {
+  // Construct a safe fallback URL for GitHub pages hosting pattern
+  const encoded = encodeURIComponent(repoName);
+  return `https://${USER}.github.io/${encoded}/`;
+}
+
 function createProjectCard(repo, readmeSnippet = "") {
   const card = el("article", { className: "card", role: "article", tabindex: "0" });
 
-  // Title
   const h3 = el("h3");
-  const nameLink = el("a", { href: "#", ariaLabel: `Open project ${repo.name}` }, repo.name);
-  nameLink.addEventListener("click", (e) => e.preventDefault()); // buttons control navigation
-  h3.appendChild(nameLink);
+  const nameA = el("a", { href: "#", ariaLabel: `Project ${repo.name}` }, repo.name);
+  nameA.addEventListener("click", (e) => e.preventDefault());
+  h3.appendChild(nameA);
   card.appendChild(h3);
 
-  // Description
-  const desc = el("p", {}, repo.description || "No description provided.");
-  card.appendChild(desc);
+  card.appendChild(el("p", {}, repo.description || "No description provided."));
 
   if (readmeSnippet) {
-    const sn = el("p", { className: "muted" }, readmeSnippet);
-    card.appendChild(sn);
+    card.appendChild(el("p", { className: "muted" }, readmeSnippet));
   }
 
-  // Meta row
   const meta = el("div", { className: "meta" });
   meta.appendChild(el("div", { className: "badge" }, repo.language || "Other"));
   meta.appendChild(el("div", {}, `⭐ ${repo.stargazers_count || 0}`));
@@ -102,33 +97,49 @@ function createProjectCard(repo, readmeSnippet = "") {
   meta.appendChild(date);
   card.appendChild(meta);
 
-  // Footer: two buttons
+  // Footer buttons
   const footer = el("div", { className: "card-footer" });
-  const liveLabel = (repo.homepage && isValidHttpUrl(repo.homepage)) ? "Live Demo" : "Open";
-  const liveBtn = el("a", { className: "btn live", role: "button", href: "#" }, liveLabel);
-  const codeBtn = el("a", { className: "btn code", role: "button", href: "#", target: "_blank", rel: "noopener noreferrer" }, "View Code");
+
+  // Determine final target for Live / Output button
+  let liveTarget = null;
+  if (repo.homepage && isValidHttpUrl(repo.homepage)) {
+    liveTarget = repo.homepage;
+  } else {
+    // use fallback GitHub Pages pattern
+    liveTarget = githubPagesFallback(repo.name);
+  }
+
+  const liveBtn = el("a", { className: "btn live", role: "button", href: "#", title: liveTarget }, "Live / Output");
+  const codeBtn = el("a", { className: "btn code", role: "button", href: repo.html_url, target: "_blank", rel: "noopener noreferrer", title: repo.html_url }, "View Code");
 
   liveBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    if (repo.homepage && isValidHttpUrl(repo.homepage)) {
+    // final safety: open homepage if valid, else attempt fallback; if fallback not valid, open repo
+    if (isValidHttpUrl(repo.homepage)) {
       window.open(repo.homepage, "_blank", "noopener,noreferrer");
-    } else {
+      return;
+    }
+    // attempt to open fallback; no need to validate because it's an https string, but try/catch for safety
+    try {
+      window.open(liveTarget, "_blank", "noopener,noreferrer");
+    } catch (err) {
       window.open(repo.html_url, "_blank", "noopener,noreferrer");
     }
   });
+
   codeBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    window.open(repo.html_url, "_blank", "noopener,noreferrer");
+    // default anchor behavior opens repo in new tab; ensure noopener
+    // no-op here; behavior set via attributes
   });
 
-  liveBtn.setAttribute("aria-label", `Open live demo for ${repo.name}`);
+  liveBtn.setAttribute("aria-label", `Open live output for ${repo.name}`);
   codeBtn.setAttribute("aria-label", `Open GitHub repo for ${repo.name}`);
 
   footer.appendChild(liveBtn);
   footer.appendChild(codeBtn);
   card.appendChild(footer);
 
-  // Keyboard: Enter/Space opens Live demo
+  // Keyboard: Enter triggers Live button
   card.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -139,25 +150,15 @@ function createProjectCard(repo, readmeSnippet = "") {
   return card;
 }
 
-/* Grouping and featured selection */
-function groupByLanguage(repos) {
-  return repos.reduce((acc, r) => {
-    const k = r.language || "Other";
-    if (!acc[k]) acc[k] = [];
-    acc[k].push(r);
-    return acc;
-  }, {});
-}
-
 function pickFeatured(repos) {
-  const manual = FEATURED.map(s => s.toLowerCase());
-  let featured = repos.filter(r => manual.includes(r.name.toLowerCase()));
+  const lowered = FEATURED.map(s => s.toLowerCase());
+  let featured = repos.filter(r => lowered.includes(r.name.toLowerCase()));
   if (featured.length < 3) {
     const topicMatches = repos.filter(r => {
-      const nameMatch = r.name && r.name.toLowerCase().includes("portfolio-featured");
+      const nm = r.name && r.name.toLowerCase().includes("portfolio-featured");
       const topics = r.topics || [];
       const topicMatch = topics.some(t => t.toLowerCase().includes("portfolio-featured"));
-      return nameMatch || topicMatch;
+      return nm || topicMatch;
     });
     topicMatches.forEach(t => { if (!featured.find(f => f.id === t.id)) featured.push(t); });
   }
@@ -175,7 +176,6 @@ function pickFeatured(repos) {
   return featured.slice(0,3);
 }
 
-/* Rendering helpers */
 async function renderFeatured(repos) {
   const container = document.getElementById("featured-grid");
   container.innerHTML = "";
@@ -184,20 +184,6 @@ async function renderFeatured(repos) {
     const snip = await fetchReadmeSnippet(r);
     container.appendChild(createProjectCard(r, snip));
   }
-}
-
-function renderCategories(repos) {
-  const container = document.getElementById("categories");
-  container.innerHTML = "";
-  const groups = groupByLanguage(repos);
-  Object.keys(groups).sort().forEach(lang => {
-    const wrap = el("div");
-    wrap.appendChild(el("h3", {}, `${lang} (${groups[lang].length})`));
-    const row = el("div", { className: "projects-grid" });
-    groups[lang].slice(0,6).forEach(r => row.appendChild(createProjectCard(r)));
-    wrap.appendChild(row);
-    container.appendChild(wrap);
-  });
 }
 
 async function renderAll(repos) {
@@ -209,15 +195,13 @@ async function renderAll(repos) {
   }
 }
 
-/* Rate limit banner */
 function showRateLimitNotice() {
   const main = document.getElementById("main");
   const banner = el("div", { className: "note" }, "");
-  banner.innerHTML = `<strong>GitHub API rate limit reached.</strong> For local development, set a Personal Access Token (PAT) in app.js (GITHUB_TOKEN). See README for instructions.`;
+  banner.innerHTML = `<strong>GitHub API rate limit reached.</strong> For local development, set a Personal Access Token (PAT) in app.js (GITHUB_TOKEN). See README.`;
   main.prepend(banner);
 }
 
-/* IntersectionObserver for reveal-on-scroll */
 function initRevealObserver() {
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -230,13 +214,11 @@ function initRevealObserver() {
   document.querySelectorAll(".reveal").forEach(elm => obs.observe(elm));
 }
 
-/* Initialize app */
 async function init() {
   try {
     const repos = await fetchJSON(REPOS_ENDPOINT);
     repos.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
     await renderFeatured(repos);
-    renderCategories(repos);
     await renderAll(repos);
     initRevealObserver();
   } catch (err) {
@@ -251,5 +233,4 @@ async function init() {
   }
 }
 
-/* Run on DOM ready */
 document.addEventListener("DOMContentLoaded", init);
