@@ -4,108 +4,137 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Poojitha Yelkur — AI & Data Science Portfolio</title>
-  <meta name="description" content="Poojitha Yelkur — AI & Data Science undergraduate. Projects, live demos, notebooks, and MLOps work. Interned at Amazon & Infosys. Resume & contact." />
+  <meta name="description" content="Poojitha Yelkur — AI & Data Science undergraduate. Projects, live demos, notebooks, MLOps work. Interned at Amazon & Infosys. Resume & contact." />
   <meta name="keywords" content="AI, Data Science, Machine Learning, MLOps, Python, TensorFlow, PyTorch, Kaggle, Poojitha Yelkur" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="hero" role="banner">
-    <div class="container hero-inner">
-      <div class="hero-left">
-        <img class="profile-pic" src="https://github.com/PoojithaYelkur.png" alt="Poojitha Yelkur — profile picture" width="128" height="128" />
-        <div class="hero-text">
+  <!-- Left nav inspired by the referenced single-page portfolio layout (compact vertical nav) -->
+  <aside class="side-nav" aria-label="Primary">
+    <div class="side-top">
+      <img class="side-avatar" src="https://github.com/PoojithaYelkur.png" alt="Poojitha Yelkur">
+      <div class="side-name">Poojitha<br/><span class="side-role">AI & Data Science</span></div>
+    </div>
+    <nav class="side-links" role="navigation">
+      <a href="#hero">Home</a>
+      <a href="#skills">Skills</a>
+      <a href="#featured">Featured</a>
+      <a href="#all-projects">Projects</a>
+      <a href="#resume">Resume</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="side-footer">
+      <a href="https://www.linkedin.com/in/yelkur-pujitha" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">LinkedIn</a>
+      <a href="https://github.com/PoojithaYelkur" target="_blank" rel="noopener noreferrer" aria-label="GitHub">GitHub</a>
+    </div>
+  </aside>
+
+  <main class="content" id="main">
+    <!-- HERO (large, cinematic like the reference) -->
+    <section id="hero" class="hero section reveal">
+      <div class="hero-inner">
+        <div class="hero-left">
           <h1>Poojitha Yelkur</h1>
-          <p class="tagline">Building Intelligent Systems through Data-Driven Insights and MLOps.</p>
-          <p class="subtle">AI & Data Science undergraduate • Interned at Amazon & Infosys • CGPA: 9.2/10</p>
-          <div class="cta-row">
-            <a class="btn primary" href="Pujitha resume.pdf" download="Poojitha_Yelkur_Resume.pdf" aria-label="Download resume">Download Resume</a>
-            <a class="btn ghost" href="https://www.linkedin.com/in/yelkur-pujitha" target="_blank" rel="noopener noreferrer" aria-label="Open LinkedIn">LinkedIn</a>
-            <a class="btn ghost" href="https://github.com/PoojithaYelkur" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub">GitHub</a>
+          <p class="lead">Building Intelligent Systems through Data-Driven Insights & MLOps.</p>
+          <p class="meta">AI & Data Science undergraduate • Interned at Amazon & Infosys • CGPA: 9.2/10</p>
+          <div class="hero-ctas">
+            <a class="btn primary" href="Pujitha resume.pdf" download="Poojitha_Yelkur_Resume.pdf">Download Resume</a>
+            <a class="btn ghost" href="https://www.linkedin.com/in/yelkur-pujitha" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a class="btn ghost" href="https://github.com/PoojithaYelkur" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="profile-wrap">
+            <img class="profile-pic" src="https://github.com/PoojithaYelkur.png" alt="Poojitha Yelkur">
+            <div class="pulse-glow" aria-hidden="true"></div>
+          </div>
+          <div class="quick-stats">
+            <div class="stat">
+              <div class="stat-number">9.2</div>
+              <div class="stat-label">CGPA</div>
+            </div>
+            <div class="stat">
+              <div class="stat-number">Amazon</div>
+              <div class="stat-label">Intern (Jun–Aug 2025)</div>
+            </div>
+            <div class="stat">
+              <div class="stat-number">Kaggle</div>
+              <div class="stat-label">Competitions</div>
+            </div>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="hero-right">
-        <div class="stats-card" aria-hidden="true">
-          <div class="stat"><span class="num">9.2</span><small>CGPA</small></div>
-          <div class="stat"><span class="num">Amazon</span><small>Intern (Jun–Aug 2025)</small></div>
-          <div class="stat"><span class="num">Kaggle</span><small>Competitions & Dashboards</small></div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <main id="main" class="container" role="main">
     <!-- Skills -->
-    <section id="skills" class="section fade-in">
+    <section id="skills" class="section reveal">
       <h2>Technical Skills</h2>
-      <div class="skills-grid">
-        <span class="skill">Python</span>
-        <span class="skill">TensorFlow / PyTorch</span>
-        <span class="skill">MLOps & Docker</span>
-        <span class="skill">SQL / Data Engineering</span>
-        <span class="skill">NLP / Computer Vision</span>
-        <span class="skill">Power BI • Pandas • NumPy</span>
+      <div class="skills">
+        <span>Python</span>
+        <span>TensorFlow / PyTorch</span>
+        <span>MLOps • Docker</span>
+        <span>SQL • Data Engineering</span>
+        <span>NLP • Computer Vision</span>
+        <span>Pandas • NumPy • Scikit-learn</span>
       </div>
     </section>
 
-    <!-- Featured Projects -->
-    <section id="featured" class="section fade-in">
+    <!-- Featured -->
+    <section id="featured" class="section reveal">
       <h2>Featured Projects</h2>
-      <div id="featured-grid" class="grid"></div>
+      <div id="featured-grid" class="projects-grid"></div>
     </section>
 
-    <!-- By Category -->
-    <section id="by-category" class="section fade-in">
+    <!-- Projects by Category -->
+    <section id="by-category" class="section reveal">
       <h2>Projects by Category</h2>
-      <div id="categories" class="stack"></div>
+      <div id="categories" class="category-stack"></div>
     </section>
 
-    <!-- All Projects -->
-    <section id="all-projects" class="section fade-in">
+    <!-- All projects -->
+    <section id="all-projects" class="section reveal">
       <h2>All Projects</h2>
-      <div id="projects" class="grid"></div>
+      <div id="projects" class="projects-grid"></div>
     </section>
 
     <!-- Resume & Achievements -->
-    <section id="resume" class="section fade-in">
+    <section id="resume" class="section reveal">
       <h2>Resume & Achievements</h2>
-      <div class="resume-row">
+      <div class="resume-panel">
         <div class="resume-left">
-          <a class="btn primary" href="Pujitha resume.pdf" download="Poojitha_Yelkur_Resume.pdf" aria-label="Download resume">Download Resume (PDF)</a>
-          <p class="muted">Source resume included in repo. See README for citation.</p>
+          <a class="btn primary" href="Pujitha resume.pdf" download="Poojitha_Yelkur_Resume.pdf">Download Resume (PDF)</a>
+          <p class="muted">Resume included in repository (source: provided file).</p>
         </div>
-        <div class="achievements">
+        <div class="resume-right">
           <ul>
             <li>Amazon Future Engineer Scholar (2024–25)</li>
-            <li>Consolation Prize — Yukthi Hackathon</li>
-            <li>Shortlisted — Myntra HackerRamp 2024 (Top 5%)</li>
-            <li>Certs: Vertex AI Prompt Design, AWS ML Foundation</li>
+            <li>Yukthi Hackathon — Consolation Prize</li>
+            <li>Myntra HackerRamp 2024 — Top 5%</li>
+            <li>Certs: Vertex AI Prompt Design, AWS ML Foundations</li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- Note about interaction -->
-    <section class="section note fade-in">
-      <p><small><strong>Interaction model:</strong> Each project card includes two buttons — <em>Live Demo / Notebook</em> (opens project's homepage if set) and <em>View Code</em> (opens GitHub repo). This prioritizes live, runnable demos for interviewers.</small></p>
+    <!-- Note about interactions -->
+    <section class="section note reveal">
+      <p><small><strong>Interaction model:</strong> Each project card exposes two buttons — <em>Live Demo / Notebook</em> (opens project's homepage if set) and <em>View Code</em> (opens GitHub). This prioritizes runnable demos for interviewers while keeping code accessible.</small></p>
     </section>
 
     <!-- Contact -->
-    <section id="contact" class="section fade-in">
+    <section id="contact" class="section reveal">
       <h2>Contact</h2>
       <p>College email: <a href="mailto:23211a72c6@bvrit.ac.in">23211a72c6@bvrit.ac.in</a></p>
       <p>Personal email: <a href="mailto:23211a72c6@gmail.com">23211a72c6@gmail.com</a></p>
       <p>LinkedIn: <a href="https://www.linkedin.com/in/yelkur-pujitha" target="_blank" rel="noopener noreferrer">/in/yelkur-pujitha</a></p>
       <p>GitHub: <a href="https://github.com/PoojithaYelkur" target="_blank" rel="noopener noreferrer">github.com/PoojithaYelkur</a></p>
     </section>
-  </main>
 
-  <footer class="footer" role="contentinfo">
-    <div class="container">
-      <small>Auto-generated portfolio • Projects sourced from GitHub public repos for <strong>PoojithaYelkur</strong>.</small>
-    </div>
-  </footer>
+    <footer class="footer">
+      <small>Designed for placement drives — projects auto-sourced from GitHub public repos (user: <strong>PoojithaYelkur</strong>).</small>
+    </footer>
+  </main>
 
   <script src="app.js" defer></script>
 </body>
