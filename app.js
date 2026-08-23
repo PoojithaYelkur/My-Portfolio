@@ -1,16 +1,3 @@
-/**
- * app.js — PATCHED / FINAL
- *
- * - Adds top-of-file sanity log
- * - Robust DOM existence checks to avoid fatal null errors
- * - Graceful handling when GitHub API fails (rate-limits / network)
- * - Keeps Live / Output fallback to GitHub Pages
- * - Keeps README snippet fetching but never blocks rendering
- * - IntersectionObserver safe-guarded (only runs when .reveal exist)
- *
- * Replace your existing app.js with this file.
- */
-
 console.log("app.js loaded successfully — starting portfolio script");
 
 /* CONFIG */
